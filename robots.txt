@@ -1,0 +1,1 @@
+Sitemap: https://patrick-hanley.github.io/thought_experiments/sitemap.xml
