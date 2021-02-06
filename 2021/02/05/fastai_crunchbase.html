@@ -77,7 +77,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      32 min read
+      29 min read
     
 </span></p>
 
@@ -124,110 +124,6 @@ window.onload = wrap_img;
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<details class="description">
-      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
-        <p><div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">reload_ext</span> autoreload
-<span class="o">%</span><span class="k">autoreload</span> 2
-<span class="o">%</span><span class="k">matplotlib</span> inline
-
-<span class="o">!</span>pip install fastai --upgrade --q
-
-<span class="kn">from</span> <span class="nn">pandas.api.types</span> <span class="kn">import</span> <span class="n">is_string_dtype</span><span class="p">,</span> <span class="n">is_numeric_dtype</span><span class="p">,</span> <span class="n">is_categorical_dtype</span>
-<span class="kn">from</span> <span class="nn">fastai.tabular.all</span> <span class="kn">import</span> <span class="o">*</span>
-
-<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
-<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
-<span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBClassifier</span>
-<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">model_selection</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">class_weight</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">classification_report</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
-
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">display_svg</span><span class="p">,</span> <span class="n">SVG</span>
-<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
-
-<span class="kn">from</span> <span class="nn">google.colab</span> <span class="kn">import</span> <span class="n">drive</span>
-<span class="n">drive</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s1">&#39;/content/gdrive&#39;</span><span class="p">,</span> <span class="n">force_remount</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">root_dir</span> <span class="o">=</span> <span class="s2">&quot;/content/gdrive/My Drive/&quot;</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-</p>
-    </details>
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>     |████████████████████████████████| 194kB 5.4MB/s 
-     |████████████████████████████████| 61kB 5.7MB/s 
-Mounted at /content/gdrive
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<details class="description">
-      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
-        <p><div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">base_dir</span> <span class="o">=</span> <span class="n">root_dir</span> <span class="o">+</span> <span class="s1">&#39;crunchbase&#39;</span>
-<span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">base_dir</span><span class="p">)</span>
-<span class="n">csv_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">base_dir</span><span class="o">+</span><span class="s1">&#39;/crunchbase_data_cleaned_3.csv&#39;</span><span class="p">)</span>
-
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">)</span>
-<span class="n">cleanup_nums</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span>     <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="kc">False</span><span class="p">}}</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">cleanup_nums</span><span class="p">)</span>
-
-<span class="n">X</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<span class="n">y</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">status</span>
-
-<span class="n">X</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">categorical_features_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dtypes</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-<span class="n">dep_var</span> <span class="o">=</span> <span class="s1">&#39;status&#39;</span>
-<span class="n">cont</span><span class="p">,</span><span class="n">cat</span> <span class="o">=</span> <span class="n">cont_cat_split</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dep_var</span><span class="o">=</span><span class="n">dep_var</span><span class="p">)</span>
-<span class="n">procs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Categorify</span><span class="p">,</span> <span class="n">FillMissing</span><span class="p">]</span>
-
-<span class="c1"># split data into train and test sets</span>
-<span class="n">seed</span> <span class="o">=</span> <span class="mi">7</span>
-<span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.2</span>
-<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-<span class="n">splits</span> <span class="o">=</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">index</span><span class="p">),</span><span class="nb">list</span><span class="p">(</span><span class="n">X_test</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
-
-<span class="n">to</span> <span class="o">=</span> <span class="n">TabularPandas</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">procs</span><span class="p">,</span> <span class="n">cat</span><span class="p">,</span> <span class="n">cont</span><span class="p">,</span> <span class="n">y_names</span><span class="o">=</span><span class="n">dep_var</span><span class="p">,</span> <span class="n">splits</span><span class="o">=</span><span class="n">splits</span><span class="p">)</span>
-<span class="n">xs</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span><span class="n">to</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">y</span>
-<span class="n">valid_xs</span><span class="p">,</span> <span class="n">valid_y</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span><span class="n">to</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">y</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-</p>
-    </details>
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="I-used-a-neural-network-to-encode-all-the-feaatures-and-extraaacted-the-ebedding-layers-for-further-analysis.">I used a neural network to encode all the feaatures and extraaacted the ebedding layers for further analysis.<a class="anchor-link" href="#I-used-a-neural-network-to-encode-all-the-feaatures-and-extraaacted-the-ebedding-layers-for-further-analysis."> </a></h1><blockquote><h2 id="Instead-of-a-simple-label-encoding-of-each-feature,-we-create-a-vector-representation.">Instead of a simple label encoding of each feature, we create a vector representation.<a class="anchor-link" href="#Instead-of-a-simple-label-encoding-of-each-feature,-we-create-a-vector-representation."> </a></h2><p>The sample below shows a vector of length 3.<br />
@@ -273,134 +169,6 @@ The advantage is that we are able to transform discreet variable into vectors th
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<details class="description">
-      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
-        <p><div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">feat_importance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
-  <span class="c1"># git list of feature importance for given model</span>
-  <span class="k">try</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;cols&#39;</span><span class="p">:</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="s1">&#39;imp&#39;</span><span class="p">:</span><span class="n">m</span><span class="o">.</span><span class="n">feature_importances_</span><span class="p">}</span>
-                      <span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;imp&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-  <span class="k">except</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-    
-<span class="k">def</span> <span class="nf">save_predictions</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">target_names</span><span class="p">,</span> <span class="n">note</span><span class="p">):</span>
-  <span class="n">col</span> <span class="o">=</span> <span class="p">[]</span>
-  <span class="k">for</span> <span class="n">target_name</span> <span class="ow">in</span> <span class="n">target_names</span><span class="p">:</span>
-    <span class="n">tmp</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">name</span><span class="p">,</span> <span class="n">target_name</span><span class="p">,</span> <span class="n">note</span><span class="p">])</span>
-    <span class="n">col</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
-  <span class="k">try</span><span class="p">:</span>
-    <span class="n">predictions</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">predict_log_proba</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-  <span class="k">except</span><span class="p">:</span>
-    <span class="n">predictions</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-
-  <span class="n">predict_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float&quot;</span><span class="p">)</span>
-  <span class="n">delta_name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;delta&#39;</span><span class="p">,</span> <span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
-  <span class="n">predict_df</span><span class="p">[</span><span class="n">delta_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">predict_df</span><span class="p">[</span><span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">predict_df</span><span class="p">[</span><span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
-  <span class="k">return</span> <span class="n">predict_df</span>
-
-<span class="c1"># modified based on this blog: https://towardsdatascience.com/quickly-test-multiple-models-a98477476f0</span>
-<span class="k">def</span> <span class="nf">run_exps</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">X_train</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="p">,</span> <span class="n">y_train</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">X_test</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">y_test</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">note</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Lightweight script to test many models and find winners</span>
-<span class="sd">    :param models: array of tuples containing (model_name, model)</span>
-<span class="sd">    :param X_train: training split</span>
-<span class="sd">    :param y_train: training target vector</span>
-<span class="sd">    :param X_test: test split</span>
-<span class="sd">    :param y_test: test target vector</span>
-<span class="sd">    :return: DataFrame of predictions</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="nb">print</span> <span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">X_test</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y_test</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">dfs_predictions</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">scoring</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span> <span class="s1">&#39;precision_weighted&#39;</span><span class="p">,</span> <span class="s1">&#39;recall_weighted&#39;</span><span class="p">,</span> <span class="s1">&#39;f1_weighted&#39;</span><span class="p">,</span> <span class="s1">&#39;roc_auc&#39;</span><span class="p">]</span>
-    <span class="n">target_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;closed&#39;</span><span class="p">,</span> <span class="s1">&#39;aquired&#39;</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-        <span class="n">kfold</span> <span class="o">=</span> <span class="n">model_selection</span><span class="o">.</span><span class="n">KFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">90210</span><span class="p">)</span>
-        <span class="n">cv_results</span> <span class="o">=</span> <span class="n">model_selection</span><span class="o">.</span><span class="n">cross_validate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="n">scoring</span><span class="p">)</span>
-        <span class="n">clf</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">target_names</span><span class="o">=</span><span class="n">target_names</span><span class="p">))</span>
-        <span class="k">try</span><span class="p">:</span>
-          <span class="n">fi</span><span class="o">=</span><span class="n">feat_importance</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X_test</span><span class="p">)</span>
-          <span class="c1">#print (fi[:10])</span>
-          <span class="n">plot_fi</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">fi</span><span class="p">[:</span><span class="mi">10</span><span class="p">]);</span>
-          
-        <span class="k">except</span><span class="p">:</span>
-          <span class="nb">print</span><span class="p">()</span>
-        <span class="nb">print</span> <span class="p">()</span>
-        <span class="n">predict_df</span><span class="o">=</span><span class="n">save_predictions</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">clf</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">target_names</span><span class="p">,</span> <span class="n">note</span><span class="p">)</span>
-        <span class="c1">#print (predict_df[:10])</span>
-        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cv_results</span><span class="p">)</span>
-        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">this_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">cv_results</span><span class="p">)</span>
-        <span class="n">this_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_df</span><span class="p">)</span>
-        <span class="n">dfs_predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predict_df</span><span class="p">)</span>
-    <span class="n">final</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">prediction_dfs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs_predictions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">final</span><span class="p">,</span> <span class="n">prediction_dfs</span>  
-
-<span class="k">def</span> <span class="nf">nn_embeddings</span><span class="p">(</span><span class="n">city_es</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">market_es</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">region_es</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
-                  <span class="n">founded_month_es</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">founded_quarter_es</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
-                  <span class="n">state_code_es</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span> <span class="n">use_default_embeddings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-  <span class="c1"># use a neural network to create ebeddings of categorical data</span>
-  
-
-  <span class="k">if</span> <span class="n">use_default_embeddings</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
-    <span class="n">learn</span> <span class="o">=</span> <span class="n">tabular_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span><span class="n">layers</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span><span class="n">metrics</span><span class="o">=</span><span class="n">accuracy</span> <span class="p">,</span>
-                            <span class="n">emb_szs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;city&#39;</span><span class="p">:</span><span class="n">city_es</span><span class="p">,</span>
-                                      <span class="s1">&#39;market&#39;</span><span class="p">:</span><span class="n">market_es</span><span class="p">,</span>
-                                      <span class="s1">&#39;region&#39;</span><span class="p">:</span><span class="n">region_es</span><span class="p">,</span>
-                                      <span class="s1">&#39;founded_month&#39;</span><span class="p">:</span><span class="n">founded_month_es</span><span class="p">,</span> 
-                                      <span class="s1">&#39;founded_quarter&#39;</span><span class="p">:</span><span class="n">founded_quarter_es</span><span class="p">,</span>
-                                      <span class="s1">&#39;state_code&#39;</span><span class="p">:</span><span class="n">state_code_es</span><span class="p">})</span>
-  <span class="k">else</span><span class="p">:</span>
-    <span class="n">learn</span> <span class="o">=</span> <span class="n">tabular_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span><span class="n">layers</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span> <span class="n">metrics</span><span class="o">=</span><span class="n">accuracy</span><span class="p">)</span>
-
-  <span class="n">lr_in</span><span class="p">,</span> <span class="n">lr_steep</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">lr_find</span><span class="p">(</span><span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-  <span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">lr_steep</span><span class="p">,</span> <span class="n">cbs</span><span class="o">=</span><span class="n">EarlyStoppingCallback</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span> <span class="n">min_delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-  
-  <span class="c1"># after fitting, get embeddings to be used by ML</span>
-  <span class="n">embeded_xs</span> <span class="o">=</span> <span class="n">embed_features</span><span class="p">(</span><span class="n">learn</span><span class="p">,</span> <span class="n">learn</span><span class="o">.</span><span class="n">dls</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">xs</span><span class="p">)</span>
-  <span class="n">xs_valid</span> <span class="o">=</span> <span class="n">embed_features</span><span class="p">(</span><span class="n">learn</span><span class="p">,</span> <span class="n">learn</span><span class="o">.</span><span class="n">dls</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">xs</span><span class="p">)</span>
-
-  <span class="k">return</span> <span class="p">(</span><span class="n">learn</span><span class="p">,</span> <span class="n">embeded_xs</span><span class="p">,</span> <span class="n">xs_valid</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">embed_features</span><span class="p">(</span><span class="n">learner</span><span class="p">,</span> <span class="n">xs</span><span class="p">):</span>
-  <span class="c1"># https://forums.fast.ai/t/using-embedding-from-the-neural-network-in-random-forests/80063/9</span>
-  <span class="c1"># citation: danielwbn</span>
-    <span class="n">xs</span> <span class="o">=</span> <span class="n">xs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">learner</span><span class="o">.</span><span class="n">dls</span><span class="o">.</span><span class="n">cat_names</span><span class="p">):</span>
-        <span class="n">emb</span> <span class="o">=</span> <span class="n">learner</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">embeds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">new_feat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">emb</span><span class="p">(</span><span class="n">tensor</span><span class="p">(</span><span class="n">xs</span><span class="p">[</span><span class="n">feature</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)),</span> <span class="n">index</span><span class="o">=</span><span class="n">xs</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">emb</span><span class="o">.</span><span class="n">embedding_dim</span><span class="p">)])</span>
-        <span class="n">xs</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">xs</span> <span class="o">=</span> <span class="n">xs</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_feat</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">xs</span>
-
-<span class="k">def</span> <span class="nf">plot_fi</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">fi</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">fi</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;cols&#39;</span><span class="p">,</span> <span class="s1">&#39;imp&#39;</span><span class="p">,</span> <span class="s1">&#39;barh&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-</p>
-    </details>
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Ensembling-the-embeddings">Ensembling the embeddings<a class="anchor-link" href="#Ensembling-the-embeddings"> </a></h1><p>What makes this code unique is the fact that I took the same data and ran it through 4 different neural networks with each one set to a different embedding size.</p>
@@ -430,25 +198,24 @@ The advantage is that we are able to transform discreet variable into vectors th
 
 <span class="n">dls</span> <span class="o">=</span> <span class="n">to_nn</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="mi">512</span><span class="p">)</span>
 
-<span class="n">_</span><span class="p">,</span> <span class="n">embeded_xs_1</span><span class="p">,</span> <span class="n">xs_valid_1</span> <span class="o">=</span> <span class="n">nn_embeddings</span><span class="p">(</span><span class="n">city_es</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">market_es</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">region_es</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                  <span class="n">founded_month_es</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">founded_quarter_es</span> <span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                  <span class="n">state_code_es</span> <span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">emb_szs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;city&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;market&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;region&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;founded_month&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> 
+         <span class="s1">&#39;founded_quarter&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;state_code&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">}</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">embeded_xs_1</span><span class="p">,</span> <span class="n">xs_valid_1</span> <span class="o">=</span> <span class="n">nn_embeddings</span><span class="p">(</span><span class="n">emb_szs</span><span class="p">)</span>
 <span class="n">df_f</span><span class="p">,</span> <span class="n">embed_1_df</span> <span class="o">=</span> <span class="n">run_exps</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">embeded_xs_1</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">xs_valid_1</span><span class="p">,</span> <span class="n">valid_y</span><span class="p">,</span> <span class="s1">&#39;embed_1&#39;</span><span class="p">)</span>
 
 
-<span class="n">_</span><span class="p">,</span> <span class="n">embeded_xs_2</span><span class="p">,</span> <span class="n">xs_valid_2</span> <span class="o">=</span> <span class="n">nn_embeddings</span><span class="p">(</span><span class="n">city_es</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">market_es</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">region_es</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-                  <span class="n">founded_month_es</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">founded_quarter_es</span> <span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                  <span class="n">state_code_es</span> <span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">emb_szs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;city&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;market&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="s1">&#39;region&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="s1">&#39;founded_month&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> 
+         <span class="s1">&#39;founded_quarter&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="s1">&#39;state_code&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">}</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">embeded_xs_2</span><span class="p">,</span> <span class="n">xs_valid_2</span> <span class="o">=</span> <span class="n">nn_embeddings</span><span class="p">(</span><span class="n">emb_szs</span><span class="p">)</span>
 <span class="n">df_f</span><span class="p">,</span> <span class="n">embed_2_df</span> <span class="o">=</span> <span class="n">run_exps</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">embeded_xs_2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">xs_valid_2</span><span class="p">,</span> <span class="n">valid_y</span><span class="p">,</span> <span class="s1">&#39;embed_2&#39;</span><span class="p">)</span>
 
-
-<span class="n">_</span><span class="p">,</span> <span class="n">embeded_xs_hand</span><span class="p">,</span> <span class="n">xs_valid_hand</span> <span class="o">=</span> <span class="n">nn_embeddings</span><span class="p">(</span><span class="n">city_es</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">market_es</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">region_es</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-                  <span class="n">founded_month_es</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">founded_quarter_es</span> <span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                  <span class="n">state_code_es</span> <span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">emb_szs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;city&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;market&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="s1">&#39;region&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="s1">&#39;founded_month&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> 
+         <span class="s1">&#39;founded_quarter&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="s1">&#39;state_code&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">embeded_xs_2</span><span class="p">,</span> <span class="n">xs_valid_2</span> <span class="o">=</span> <span class="n">nn_embeddings</span><span class="p">(</span><span class="n">emb_szs</span><span class="p">)</span>
 <span class="n">df_f</span><span class="p">,</span> <span class="n">embed_hand_df</span> <span class="o">=</span> <span class="n">run_exps</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">embeded_xs_hand</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">xs_valid_hand</span><span class="p">,</span> <span class="n">valid_y</span><span class="p">,</span> <span class="s1">&#39;embed_hand&#39;</span><span class="p">)</span>
 
 
-<span class="n">_</span><span class="p">,</span> <span class="n">embeded_xs_default</span><span class="p">,</span> <span class="n">xs_valid_default</span> <span class="o">=</span> <span class="n">nn_embeddings</span><span class="p">(</span><span class="n">use_default_embeddings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">embeded_xs_default</span><span class="p">,</span> <span class="n">xs_valid_default</span> <span class="o">=</span> <span class="n">nn_embeddings</span><span class="p">()</span>
 <span class="n">df_f</span><span class="p">,</span> <span class="n">embed_default_df</span> <span class="o">=</span> <span class="n">run_exps</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">embeded_xs_default</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">xs_valid_default</span><span class="p">,</span> <span class="n">valid_y</span><span class="p">,</span> <span class="s1">&#39;embed_default&#39;</span><span class="p">)</span>
 </pre></div>
 
